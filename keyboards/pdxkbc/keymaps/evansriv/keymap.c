@@ -15,24 +15,69 @@
  */
 #include QMK_KEYBOARD_H
 
+enum custom_keycodes {
+    CHSPACE = SAFE_RANGE,
+    DIMENSION,
+    PASTEORIG,
+    POLYLINE,
+    ZOOMEXT,
+    ZOOMOBJ
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(
-      KC_KP_PLUS,        KC_KP_MINUS,
-      KC_KP_ASTERISK,    KC_KP_SLASH,
-      LT(1,KC_KP_EQUAL), LT(2,KC_KP_ENTER)
-   ),
+      SWIN(KC_S), ZOOMEXT,
+      KC_PGUP, KC_PGDOWN,
+      LT(1,KC_HOME), LT(2,KC_END)
+    ),
     [1] = LAYOUT(
-      KC_END, KC_HOME,
-      KC_PGDOWN, KC_PGUP,
-      _______, KC_INS
-   ),
+      DIMENSION, ZOOMOBJ,
+      CHSPACE, PASTEORIG,
+      KC_NO, POLYLINE
+    ),
     [2] = LAYOUT(
       KC_BRID, KC_BRIU,
       KC_VOLD, KC_VOLU,
-      KC_MUTE, _______
-      
-   ),
+      KC_MUTE, KC_NO
+    ),
 };
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case CHSPACE:
+      if (record->event.pressed) {
+        SEND_STRING("chsp" SS_TAP(X_ENTER));
+      }
+      break;
+    case DIMENSION:
+      if (record->event.pressed) {
+        SEND_STRING("di" SS_TAP(X_ENTER));
+      }
+      break;
+    case PASTEORIG:
+      if (record->event.pressed) {
+        SEND_STRING("pasteorig" SS_TAP(X_ENTER));
+      }
+      break;
+    case POLYLINE:
+      if (record->event.pressed) {
+        SEND_STRING("pl" SS_TAP(X_ENTER));
+      }
+      break;
+    case ZOOMEXT:
+      if (record->event.pressed) {
+        SEND_STRING("z e" SS_TAP(X_ENTER));
+      }
+      break;
+    case ZOOMOBJ:
+      if (record->event.pressed) {
+        SEND_STRING("z o" SS_TAP(X_ENTER));
+      }
+      break;
+  }
+
+  return true;
+}
 
 void matrix_init_user(void) {}
 
