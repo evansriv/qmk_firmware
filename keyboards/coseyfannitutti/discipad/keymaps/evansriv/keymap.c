@@ -21,7 +21,8 @@
 enum {
 	TD_AST_CIRC,
 	TD_DOT_CALC,
-	TD_MNS_BSPC
+	TD_MNS_BSPC,
+	TD_PLS_TAB
 };
 
 void dance_calc_finished(qk_tap_dance_state_t *state, void *user_data) {
@@ -52,11 +53,33 @@ void dance_bspc_finished(qk_tap_dance_state_t *state, void *user_data) {
 
 void dance_bspc_reset(qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
-        register_code(KC_PMNS);
+        unregister_code(KC_PMNS);
     } else if (state->count == 2) {
-        register_code(KC_BSPC);
+        unregister_code(KC_BSPC);
     } else {
-		register_code(KC_DEL);
+		unregister_code(KC_DEL);
+	}
+}
+
+void dance_tab_finished(qk_tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        register_code(KC_PPLS);
+    } else if (state->count == 2) {
+        register_code(KC_TAB);
+    } else {
+		register_mods(MOD_BIT(KC_LSFT));
+		register_code(KC_TAB);
+	}
+}
+
+void dance_tab_reset(qk_tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        unregister_code(KC_PPLS);
+    } else if (state->count == 2) {
+        unregister_code(KC_TAB);
+    } else {
+		unregister_mods(MOD_BIT(KC_LSFT));
+		unregister_code(KC_TAB);
 	}
 }
 
@@ -67,7 +90,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 	// Tap once for dot, twice to launch calculator
 	[TD_DOT_CALC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_calc_finished, dance_calc_reset),
 	// Tap once for plus, twice for tab, three times for shift-tab
-	
+	[TD_PLS_TAB] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_tab_finished, dance_tab_reset),
 	// Tap once for minus, twice for backspace, three times for forward delete
 	[TD_MNS_BSPC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_bspc_finished, dance_bspc_reset)
 };
@@ -78,7 +101,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       TO(1),   KC_PSLS, TD(TD_AST_CIRC), TD(TD_MNS_BSPC), 
       //TO(1), KC_PSLS, KC_PAST, KC_PMNS,
       KC_P7,   KC_P8,   KC_P9,            
-      KC_P4,   KC_P5,   KC_P6,   KC_PPLS, 
+      //KC_P4,   KC_P5,   KC_P6,   KC_PPLS,
+      KC_P4,   KC_P5,   KC_P6,   TD(TD_PLS_TAB), 
       KC_P1,   KC_P2,   KC_P3,            
       //KC_P0,   KC_PDOT,      KC_PENT  ),
       KC_P0,   TD(TD_DOT_CALC),      KC_PENT  ),
